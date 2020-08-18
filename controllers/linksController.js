@@ -10,11 +10,13 @@ exports.newLink = async (req, res, next) => {
         return res.status(500).json({ errors: errors.array() });
     }
 
+    //console.log(req.body)
+
     //save on db
-    const { original_name } = req.body;
+    const { original_name, name } = req.body;
     const link = new Link();
     link.url = shortid.generate();
-    link.name = shortid.generate();
+    link.name = name;
     link.original_name = original_name;
 
     //auth user configs
@@ -43,25 +45,53 @@ exports.getLink = async (req, res, next) => {
 
     if (!link) {
         res.status(404).json({
-            message: "This link doesn't exists or has reached the download limit",
+            message:
+                "This link doesn't exists or has reached the download limit",
         });
         return next();
     }
-    const {name,downloads} = link
-    res.json({file: name });
+    const { name } = link;
+    res.json({ file: name });
 
-    // downloads = 1
-    if (downloads === 1) {
+    next();
+};
 
-        req.file = name
-        
-        await Link.findOneAndRemove(req.params.url)
-        next()
-    } else {
-        downloads--;
-        await link.save()
-        console.log(link)
+exports.allLinks = async (req, res, next) => {
+    try {
+        const links = await Link.find({}).select('url -_id');
+        res.json({ links });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+exports.hasPassword = async (req, res, next) => {
+    const link = await Link.findOne({ url: req.params.url });
+
+    if (!link) {
+        res.status(404).json({
+            message:
+                "This link doesn't exists or has reached the download limit",
+        });
+        return next();
     }
 
-    // downloads > 1
+    if (link.password) {
+        return res.json({ password: true, link: link.url });
+    }
+    next();
+};
+
+exports.verifyPassword = async (req, res, next) => {
+    const { url } = req.params;
+    const { password } = req.body;
+    const link = await Link.findOne({ url });
+    const match = await bcrypt.compare(password, link.password);
+    //console.log(match);
+
+    if (match) {
+        return res.json({ match, file: link.name });
+    } else {
+        return res.json({ match });
+    }
 };

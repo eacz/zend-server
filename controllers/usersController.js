@@ -24,7 +24,7 @@ exports.newUser = async (req, res) => {
 
     try {
         await user.save();
-        res.json({ message: 'user created' });
+        res.json({ message: 'User created' });
     } catch (error) {
         console.log(error);
         res.json({ message: error.message });

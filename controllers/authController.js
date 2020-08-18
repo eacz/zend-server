@@ -21,7 +21,7 @@ exports.authenticateUser = async (req, res, next) => {
 
     if (match) {
         const token = jwt.sign(
-            { id: user._id, name: user.name },
+            { id: user._id, name: user.name, email: user.email },
             process.env.SECRET_KEY,
             { expiresIn: '8h' }
         );

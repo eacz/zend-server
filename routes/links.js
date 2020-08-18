@@ -15,6 +15,10 @@ router.post(
     linksController.newLink
 );
 
-router.get('/:url', linksController.getLink, filesController.deleteFile);
+router.get('/', linksController.allLinks)
+
+router.get('/:url', linksController.hasPassword , linksController.getLink);
+
+router.post('/:url', linksController.verifyPassword)
 
 module.exports = router;
