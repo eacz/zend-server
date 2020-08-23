@@ -7,7 +7,7 @@ const port = process.env.PORT || 4000;
 const corsConfig = {
     origin: process.env.FRONTEND_URL,
 };
-app.use(cors());
+app.use(cors(corsConfig));
 
 connectDB();
 
