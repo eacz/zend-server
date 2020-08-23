@@ -3,7 +3,7 @@ const connectDB = require('./config/db.js');
 const cors = require('cors');
 
 const app = express();
-const port = process.env.port || 4000;
+const port = process.env.PORT || 4000;
 const corsConfig = {
     origin: process.env.FRONTEND_URL,
 };
